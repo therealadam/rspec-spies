@@ -15,6 +15,21 @@ RSpec::Mocks::MethodDouble.class_eval do
   end
 end
 
+require 'rspec/mocks/argument_expectation'
+require 'rspec/mocks/proxy'
+RSpec::Mocks::Proxy.class_eval do
+  # override message received check to compare arguments using argument expectations
+  def received_message?(method_name, *args, &block)
+    args_expectation = RSpec::Mocks::ArgumentExpectation.new(*args)
+
+    @messages_received.any? do |(received_method_name, received_args, received_block)|
+      received_method_name == method_name &&
+      args_expectation.args_match?(*received_args) &&
+      received_block == block
+    end
+  end
+end
+
 require 'rspec/matchers'
 RSpec::Matchers.module_eval do
   def have_received(sym, &block)

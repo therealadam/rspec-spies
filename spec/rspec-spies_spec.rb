@@ -44,7 +44,34 @@ module Spec
         message  = messages[:failure_message_for_should_not].call(@object)
         message.should == "expected \"HI!\" to not have received :slice with [1, 2], but did"
       end
-    end
 
+      it "does match if method is called with args that match basic argument expectations" do
+        @object.stub!(:concat)
+        @object.concat("def")
+
+        have_received(:concat).with(kind_of(String)).matches?(@object).should be_true
+      end
+
+      it "does match if method is called with args that match a no_args argument expectation" do
+        @object.stub!(:downcase)
+        @object.downcase
+
+        have_received(:downcase).with(no_args).matches?(@object).should be_true
+      end
+
+      it "does match if method is called with args that match a any_args argument expectation" do
+        @object.stub!(:slice)
+        @object.slice(3, 5)
+
+        have_received(:slice).with(any_args).matches?(@object).should be_true
+      end
+
+      it "does match if method is called with args that match a regex arguement expectation" do
+        @object.stub!(:concat)
+        @object.concat("def")
+
+        have_received(:concat).with(/e/).matches?(@object).should be_true
+      end
+    end
   end
 end
