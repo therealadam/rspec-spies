@@ -66,6 +66,13 @@ module Spec
         have_received(:slice).with(any_args).matches?(@object).should be_true
       end
 
+      it "does match if method is called with args that match a anything argument expectation" do
+        @object.stub!(:slice)
+        @object.slice(3, 5)
+
+        have_received(:slice).with(anything, anything).matches?(@object).should be_true
+      end
+
       it "does match if method is called with args that match a regex arguement expectation" do
         @object.stub!(:concat)
         @object.concat("def")
